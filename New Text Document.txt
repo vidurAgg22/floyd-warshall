@@ -1,0 +1,385 @@
+#include <stdio.h>
+
+#define INF 99999 // A large value representing infinity
+#define V 4        // Number of vertices in the graph
+
+// Function to print the solution matrix
+void printSolution(int dist[][V]) {
+    printf("Shortest distances between every pair of vertices:\n");
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            if (dist[i][j] == INF)
+                printf("%7s", "INF");
+            else
+                printf("%7d", dist[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Function implementing Floyd-Warshall Algorithm
+void floydWarshall(int graph[][V]) {
+    int dist[V][V];
+
+    // Initialize the solution matrix same as the input graph matrix
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            dist[i][j] = graph[i][j];
+        }
+    }
+
+    // Updating distances for all pairs of vertices
+    for (int k = 0; k < V; k++) {
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                if (dist[i][k] != INF && dist[k][j] != INF &&
+                    dist[i][k] + dist[k][j] < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
+        }
+    }
+
+    // Print the final shortest distance matrix
+    printSolution(dist);
+}
+
+int main() {
+    /* Example graph represented as an adjacency matrix */
+    int graph[V][V] = {
+        {0, 3, INF, 7},
+        {8, 0, 2, INF},
+        {5, INF, 0, 1},
+        {2, INF, INF, 0}};
+
+    floydWarshall(graph);
+
+    return 0;
+}
+
+
+1. Introduction
+The Floyd-Warshall algorithm is a graph analysis algorithm used to find the shortest paths between all pairs of vertices in a weighted graph. It is particularly suitable for dense graphs and graphs where edge weights may be negative but without negative weight cycles. The algorithm follows a dynamic programming approach to solve the problem in 
+𝑂
+(
+𝑉
+3
+)
+O(V 
+3
+ ) time complexity, where 
+𝑉
+V is the number of vertices.
+
+2. Objective
+To implement the Floyd-Warshall algorithm in C to compute the shortest paths between all pairs of vertices in a directed weighted graph, represented as an adjacency matrix.
+
+3. Algorithm
+The Floyd-Warshall algorithm is based on the idea of repeatedly improving the shortest paths by considering each vertex as an intermediate point.
+
+Steps:
+Initialization:
+
+Create a distance matrix dist[i][j] initialized as:
+𝑑
+𝑖
+𝑠
+𝑡
+[
+𝑖
+]
+[
+𝑗
+]
+=
+𝑤
+𝑒
+𝑖
+𝑔
+ℎ
+𝑡
+(
+𝑖
+,
+𝑗
+)
+dist[i][j]=weight(i,j) if there is an edge from 
+𝑖
+i to 
+𝑗
+j.
+𝑑
+𝑖
+𝑠
+𝑡
+[
+𝑖
+]
+[
+𝑗
+]
+=
+0
+dist[i][j]=0 if 
+𝑖
+=
+𝑗
+i=j.
+𝑑
+𝑖
+𝑠
+𝑡
+[
+𝑖
+]
+[
+𝑗
+]
+=
+∞
+dist[i][j]=∞ (INF) if there is no edge between 
+𝑖
+i and 
+𝑗
+j.
+Intermediate Processing:
+
+For each vertex 
+𝑘
+k, update the distance between all pairs of vertices 
+𝑖
+i and 
+𝑗
+j using:
+𝑑
+𝑖
+𝑠
+𝑡
+[
+𝑖
+]
+[
+𝑗
+]
+=
+min
+⁡
+(
+𝑑
+𝑖
+𝑠
+𝑡
+[
+𝑖
+]
+[
+𝑗
+]
+,
+𝑑
+𝑖
+𝑠
+𝑡
+[
+𝑖
+]
+[
+𝑘
+]
++
+𝑑
+𝑖
+𝑠
+𝑡
+[
+𝑘
+]
+[
+𝑗
+]
+)
+dist[i][j]=min(dist[i][j],dist[i][k]+dist[k][j])
+This step checks whether including vertex 
+𝑘
+k as an intermediate vertex provides a shorter path.
+Final Output:
+
+After considering all vertices, the matrix dist[i][j] contains the shortest distances between all pairs of vertices.
+4. Input Representation
+
+The graph is represented as an adjacency matrix:
+𝑔
+𝑟
+𝑎
+𝑝
+ℎ
+[
+𝑖
+]
+[
+𝑗
+]
+=
+𝑤
+graph[i][j]=w if there is an edge from vertex 
+𝑖
+i to 
+𝑗
+j with weight 
+𝑤
+w.
+𝑔
+𝑟
+𝑎
+𝑝
+ℎ
+[
+𝑖
+]
+[
+𝑗
+]
+=
+∞
+graph[i][j]=∞ (INF) if no edge exists between 
+𝑖
+i and 
+𝑗
+j.
+𝑔
+𝑟
+𝑎
+𝑝
+ℎ
+[
+𝑖
+]
+[
+𝑖
+]
+=
+0
+graph[i][i]=0, as the distance from a vertex to itself is zero.
+5. Example
+Consider a graph with 4 vertices and the following adjacency matrix:
+
+[
+0
+3
+∞
+7
+8
+0
+2
+∞
+5
+∞
+0
+1
+2
+∞
+∞
+0
+]
+​
+  
+0
+8
+5
+2
+​
+  
+3
+0
+∞
+∞
+​
+  
+∞
+2
+0
+∞
+​
+  
+7
+∞
+1
+0
+​
+  
+​
+ 
+After applying the Floyd-Warshall algorithm, the shortest distances between all pairs of vertices are:
+
+[
+0
+3
+5
+6
+8
+0
+2
+3
+5
+8
+0
+1
+2
+5
+7
+0
+]
+​
+  
+0
+8
+5
+2
+​
+  
+3
+0
+8
+5
+​
+  
+5
+2
+0
+7
+​
+  
+6
+3
+1
+0
+​
+  
+​
+ 
+6. Applications
+
+Route Optimization: Used in traffic networks and communication networks to find optimal routing paths.
+Network Analysis: Helps in analyzing networks for minimum latency between nodes.
+Game Theory: Applied in strategy games to find shortest paths between positions.
+Operations Research: Used in logistics and supply chain management for distance computations.
+7. Advantages
+
+Simplicity and versatility.
+Handles negative edge weights (but not negative cycles).
+Provides the shortest paths between all pairs of vertices in a single execution.
+8. Limitations
+
+Computational complexity of 
+𝑂
+(
+𝑉
+3
+)
+O(V 
+3
+ ), making it inefficient for sparse graphs with many vertices.
+Cannot handle graphs with negative weight cycles.
+9. Conclusion
+The Floyd-Warshall algorithm is an efficient and robust method for finding shortest paths in dense graphs. Its ability to handle negative weights makes it a valuable tool in various computational problems. Through this experiment, the implementation and working of the algorithm are demonstrated, showing its practicality and correctness in solving shortest path problems.
+
